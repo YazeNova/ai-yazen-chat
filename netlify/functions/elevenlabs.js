@@ -1,5 +1,3 @@
-// This is the corrected server-side function.
-// It properly handles binary audio data for Netlify.
 exports.handler = async function (event) {
     if (event.httpMethod !== 'POST') {
         return { statusCode: 405, body: 'Method Not Allowed' };
@@ -43,18 +41,16 @@ exports.handler = async function (event) {
             return { statusCode: response.status, body: `Failed to generate audio. Details: ${errorDetails}` };
         }
 
-        // Convert the audio response into a Base64 string.
         const audioBuffer = await response.arrayBuffer();
         const audioBase64 = Buffer.from(audioBuffer).toString('base64');
 
-        // Return the Base64-encoded audio data.
         return {
             statusCode: 200,
             headers: {
                 'Content-Type': 'audio/mpeg',
             },
             body: audioBase64,
-            isBase64Encoded: true, // This tells Netlify to handle the body as binary data.
+            isBase64Encoded: true,
         };
 
     } catch (error) {
