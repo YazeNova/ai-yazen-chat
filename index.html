@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat with AI Yazen</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        html { scroll-behavior: smooth; }
+        body { font-family: 'Inter', sans-serif; background-color: #0d1117; color: #c9d1d9; }
+        .hero-bg { background: linear-gradient(-45deg, #0d1117, #161b22, #010409, #161b22); background-size: 400% 400%; animation: gradientBG 15s ease infinite; }
+        @keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+        .glassmorphism { background: rgba(22, 27, 34, 0.6); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .gemini-loader { border: 4px solid #4B5563; border-top: 4px solid #F59E0B; border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .avatar-container { position: relative; width: 160px; height: 160px; }
+        .avatar-image { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+        .mouth { position: absolute; width: 40px; height: 5px; background: #FFFFFF; border-radius: 50%; bottom: 38px; left: 50%; transform: translateX(-50%); transition: height 0.1s ease-in-out; }
+        .mouth.talking { animation: talk 0.2s infinite alternate; }
+        @keyframes talk { 0% { height: 1px; } 100% { height: 10px; } }
+        #voice-toggle-label .dot { transition: transform 0.3s ease; }
+        #voice-toggle:checked + #voice-toggle-label .dot { transform: translateX(1.5rem); }
+        #voice-toggle:checked + #voice-toggle-label .block { background-color: #f59e0b; }
+    </style>
+</head>
+<body class="antialiased">
+    
+    <button id="return-btn" class="fixed top-4 left-4 bg-gray-700 hover:bg-amber-500 text-white hover:text-gray-900 font-bold py-2 px-4 rounded-full z-50 transition">
+        <i class="fa-solid fa-arrow-left"></i> Back
+    </button>
+
+    <header id="hero" class="hero-bg text-white text-center py-20 md:py-32">
+        <div class="container mx-auto px-6">
+            <h1 class="text-4xl md:text-6xl font-black tracking-tight"> Hello 👋</h1>
+            <h2 class="text-2xl md:text-5xl font-bold text-amber-400 mt-2"> My name is Yazen. AI Yazen, with a license to connect 🕵️‍♂️ </h2>
+            <p class="mt-6 text-lg md:text-xl text-gray-300 max-w-3xl mx-auto">
+                Global Comms Strategist 🌐 | AI Solutions Architect & Educator 🤖 | Designer of the "Climbing the AI Ladder" Mastery Course Series 🪜 | Learning Manger 🎓 |  Life Coach 🧠 |  Designer 🎨 | Videographer 🎥  | Photographer 📸 | Poet & Author ✍️ | and more ...
+            </p>
+            <a href="#chat" class="mt-10 inline-block bg-amber-500 hover:bg-amber-600 text-gray-900 font-bold py-3 px-8 rounded-full text-lg transition duration-300 transform hover:scale-105">
+                💬 Start Chatting with Yazen
+            </a>
+        </div>
+    </header>
+
+    <section id="chat" class="py-20">
+        <div class="container mx-auto px-6">
+            <div class="glassmorphism rounded-2xl shadow-2xl p-6 md:p-8 lg:p-12">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <aside class="lg:col-span-1 flex flex-col items-center text-center">
+                        <div class="avatar-container">
+                            <img src="https://i.ibb.co/pjjnHy2W/face-swap-png1.png" alt="Yazen's Avatar" class="avatar-image border-4 border-amber-400" onerror="this.onerror=null;this.src='https://placehold.co/160x160/0d1117/c9d1d9?text=Avatar';">
+                            <div id="mouth" class="mouth"></div>
+                        </div>
+                        <h3 class="text-2xl font-bold mt-4 text-white">Yazen Al-Saghiri</h3>
+                        <p class="mt-2 text-gray-400">28 years of global experience bridging technology and humanity.</p>
+                        <div class="w-full border-t border-gray-700 my-6"></div>
+                        <p class="font-bold text-white mb-4">Ask me about:</p>
+                        <div class="grid grid-cols-2 gap-3 w-full">
+                            <button class="topic-btn bg-gray-700 hover:bg-amber-500 hover:text-gray-900 text-sm font-semibold p-2 rounded-lg transition">🤖 AI</button>
+                            <button class="topic-btn bg-gray-700 hover:bg-amber-500 hover:text-gray-900 text-sm font-semibold p-2 rounded-lg transition">🎓 Learning</button>
+                            <button class="topic-btn bg-gray-700 hover:bg-amber-500 hover:text-gray-900 text-sm font-semibold p-2 rounded-lg transition">🧠 Life</button>
+                            <button class="topic-btn bg-gray-700 hover:bg-amber-500 hover:text-gray-900 text-sm font-semibold p-2 rounded-lg transition">🎨 Creativity</button>
+                        </div>
+                        <div class="w-full border-t border-gray-700 my-6"></div>
+                        <div class="flex items-center justify-between w-full">
+                            <span class="font-bold text-white">Auto-Play Voice</span>
+                            <div class="flex items-center">
+                                <input type="checkbox" id="voice-toggle" class="sr-only">
+                                <label for="voice-toggle" id="voice-toggle-label" class="flex items-center cursor-pointer">
+                                    <div class="relative">
+                                        <div class="block bg-gray-600 w-14 h-8 rounded-full"></div>
+                                        <div class="dot absolute left-1 top-1 bg-white w-6 h-6 rounded-full"></div>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+                    </aside>
+                    <div class="lg:col-span-2">
+                        <div id="chat-window" class="bg-gray-900 rounded-xl h-96 p-4 flex flex-col">
+                            <div id="chat-log" class="flex-grow space-y-4 overflow-y-auto pr-2">
+                            </div>
+                            <div id="gemini-thinking-persona" class="flex items-center gap-3 my-2" style="display: none;">
+                                <i class="fa-solid fa-robot text-amber-400 text-xl pt-1"></i>
+                                <div class="gemini-loader"></div>
+                            </div>
+                        </div>
+                        <div class="mt-4 flex gap-3">
+                            <input type="text" id="user-question" class="flex-grow bg-gray-800 border border-gray-700 text-white rounded-lg p-3 focus:ring-2 focus:ring-amber-500 focus:outline-none" placeholder="Type your message here...">
+                            <button id="ask-gemini-btn" class="bg-amber-500 hover:bg-amber-600 text-gray-900 font-bold py-3 px-5 rounded-lg transition"><i class="fa-solid fa-paper-plane"></i></button>
+                            <button id="stop-speech-btn" class="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-5 rounded-lg transition" style="display: none;"><i class="fa-solid fa-stop"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="guided" class="py-20 bg-gray-900">
+        <div class="container mx-auto px-6 text-center">
+            <h2 class="text-3xl md:text-4xl font-bold text-white">Guided Experiences & Templates</h2>
+            <p class="mt-4 text-lg text-gray-400 max-w-2xl mx-auto">Not sure where to start? Try one of these structured conversation flows.</p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-12 max-w-4xl mx-auto"><button class="guided-btn glassmorphism p-4 rounded-lg font-semibold text-white hover:bg-amber-500 hover:text-gray-900 transition">"Build Your AI Skill Roadmap"</button><button class="guided-btn glassmorphism p-4 rounded-lg font-semibold text-white hover:bg-amber-500 hover:text-gray-900 transition">"Talk Through a Life Challenge"</button><button class="guided-btn glassmorphism p-4 rounded-lg font-semibold text-white hover:bg-amber-500 hover:text-gray-900 transition">"Get Design Feedback"</button><button class="guided-btn glassmorphism p-4 rounded-lg font-semibold text-white hover:bg-amber-500 hover:text-gray-900 transition">"Creative Brainstorm Session"</button><button class="guided-btn glassmorphism p-4 rounded-lg font-semibold text-white hover:bg-amber-500 hover:text-gray-900 transition">"AI Career Q&A"</button><button class="guided-btn glassmorphism p-4 rounded-lg font-semibold text-white hover:bg-amber-500 hover:text-gray-900 transition">"Draft a Project Plan"</button></div>
+        </div>
+    </section>
+    
+    <section id="courses" class="py-20">
+        <div class="container mx-auto px-6 text-center">
+            <h2 class="text-3xl md:text-4xl font-bold text-white">Climbing the AI Ladder 🪜</h2>
+            <p class="mt-4 text-lg text-gray-400 max-w-2xl mx-auto">A 5-module mastery series designed to take you from AI novice to proficient creator and strategist.</p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8 mt-12">
+                <div class="glassmorphism p-6 rounded-xl text-left transform hover:-translate-y-2 transition-transform duration-300"><div class="bg-gray-800 h-32 rounded-lg mb-4 flex items-center justify-center"><i class="fa-solid fa-book-open text-4xl text-amber-400"></i></div><h3 class="font-bold text-white">Level 1: AI Literacy</h3><p class="text-sm text-gray-400 mt-2">An overview of AI history, types, risks, and opportunities.</p></div>
+                <div class="glassmorphism p-6 rounded-xl text-left transform hover:-translate-y-2 transition-transform duration-300"><div class="bg-gray-800 h-32 rounded-lg mb-4 flex items-center justify-center"><i class="fa-solid fa-lightbulb text-4xl text-amber-400"></i></div><h3 class="font-bold text-white">Level 2: Smart Prompts</h3><p class="text-sm text-gray-400 mt-2">Mastering the art of speaking the language of AI.</p></div>
+                <div class="glassmorphism p-6 rounded-xl text-left transform hover:-translate-y-2 transition-transform duration-300"><div class="bg-gray-800 h-32 rounded-lg mb-4 flex items-center justify-center"><i class="fa-solid fa-gears text-4xl text-amber-400"></i></div><h3 class="font-bold text-white">Level 3: AI Octopus</h3><p class="text-sm text-gray-400 mt-2">Juggling multiple skills and tasks with one smart mind.</p></div>
+                <div class="glassmorphism p-6 rounded-xl text-left transform hover:-translate-y-2 transition-transform duration-300"><div class="bg-gray-800 h-32 rounded-lg mb-4 flex items-center justify-center"><i class="fa-solid fa-plane-up text-4xl text-amber-400"></i></div><h3 class="font-bold text-white">Level 4: Your AI Co-Pilot</h3><p class="text-sm text-gray-400 mt-2">Enhancing everyday tasks with a personal AI assistant.</p></div>
+                <div class="glassmorphism p-6 rounded-xl text-left transform hover:-translate-y-2 transition-transform duration-300"><div class="bg-gray-800 h-32 rounded-lg mb-4 flex items-center justify-center"><i class="fa-solid fa-rocket text-4xl text-amber-400"></i></div><h3 class="font-bold text-white">Level 5: AI in Action</h3><p class="text-sm text-gray-400 mt-2">A hands-on workshop to apply and solidify your AI skills.</p></div>
+            </div>
+        </div>
+    </section>
+
+    <section id="connect" class="py-20 bg-gray-900">
+        <div class="container mx-auto px-6 text-center">
+             <h2 class="text-3xl md:text-4xl font-bold text-white">Connect & Stay Updated</h2>
+            <p class="mt-4 text-lg text-gray-400 max-w-2xl mx-auto">Join the community, follow my journey, or invite me to collaborate with your team.</p>
+            <div class="mt-10 max-w-md mx-auto"><div class="flex flex-col sm:flex-row gap-4"><input type="email" placeholder="Enter your email" class="flex-grow bg-gray-800 border border-gray-700 text-white rounded-lg p-3 focus:ring-2 focus:ring-amber-500 focus:outline-none"><button id="subscribe-btn" class="bg-amber-500 hover:bg-amber-600 text-gray-900 font-bold py-3 px-6 rounded-lg transition">Subscribe</button></div></div>
+             <div class="mt-10 flex justify-center gap-6 text-2xl"><a href="#" class="text-gray-400 hover:text-amber-400 transition"><i class="fab fa-twitter"></i></a><a href="#" class="text-gray-400 hover:text-amber-400 transition"><i class="fab fa-linkedin-in"></i></a><a href="#" class="text-gray-400 hover:text-amber-400 transition"><i class="fab fa-youtube"></i></a><a href="#" class="text-gray-400 hover:text-amber-400 transition"><i class="fab fa-instagram"></i></a></div>
+        </div>
+    </section>
+
+    <footer class="bg-black py-8">
+        <div class="container mx-auto px-6 text-center text-gray-500">
+            <p>&copy; 2025 Yazen M. Al-Saghiri. All Rights Reserved.</p>
+            <div class="mt-4 text-sm"><a href="#" class="hover:text-amber-400 transition">About</a> &bull; <a href="#" class="hover:text-amber-400 transition">Privacy Policy</a> &bull; <a href="#" class="hover:text-amber-400 transition">AI Disclosure</a></div>
+            <p class="mt-4 text-xs">Built with 💡 & 🤖</p>
+        </div>
+    </footer>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+
+        const CONFIG = {
+            ELEVENLABS_VOICE_ID_EN: "wZQEjO54Gya3z5Ts9V00",
+            ELEVENLABS_VOICE_ID_AR: "GHBqETmNwnWVV2KJWAS0"
+        };
+        
+        const userQuestionInput = document.getElementById('user-question');
+        const askButton = document.getElementById('ask-gemini-btn');
+        const stopSpeechBtn = document.getElementById('stop-speech-btn');
+        const returnBtn = document.getElementById('return-btn');
+        const chatLog = document.getElementById('chat-log');
+        const thinkingIndicator = document.getElementById('gemini-thinking-persona');
+        const mouth = document.getElementById('mouth');
+        const voiceToggle = document.getElementById('voice-toggle');
+
+        let currentAudio = null;
+        let isVoiceEnabled = false; 
+        
+        let conversationHistory = [];
+
+        const handleGeminiRequest = async () => {
+            const userQuestion = userQuestionInput.value.trim();
+            if (!userQuestion) return;
+
+            appendMessage(userQuestion, 'user');
+            conversationHistory.push({ role: "user", parts: [{ text: userQuestion }] });
+
+            askButton.disabled = true;
+            userQuestionInput.value = '';
+            thinkingIndicator.style.display = 'flex';
+            stopSpeech();
+
+            const apiUrl = `/.netlify/functions/gemini`;
+
+            try {
+                const response = await fetch(apiUrl, { 
+                    method: 'POST', 
+                    headers: { 'Content-Type': 'application/json' }, 
+                    body: JSON.stringify({ history: conversationHistory })
+                });
+                if (!response.ok) { throw new Error(`API error: ${response.status} ${response.statusText}`); }
+
+                const result = await response.json();
+                const aiText = result.text || "I'm sorry, I couldn't process that request. Please try again.";
+                
+                appendMessage(aiText, 'ai');
+                conversationHistory.push({ role: "model", parts: [{ text: aiText }] });
+                
+                if (isVoiceEnabled) {
+                    const isArabic = /[\u0600-\u06FF]/.test(aiText);
+                    const voiceId = isArabic ? CONFIG.ELEVENLABS_VOICE_ID_AR : CONFIG.ELEVENLABS_VOICE_ID_EN;
+                    speakWithElevenLabs(aiText, voiceId);
+                }
+
+            } catch (error) {
+                console.error('Gemini function request failed:', error);
+                appendMessage('An error occurred with the AI. Please check the function logs on Netlify.', 'ai-error');
+            } finally {
+                thinkingIndicator.style.display = 'none';
+                askButton.disabled = false;
+                userQuestionInput.focus();
+            }
+        };
+        
+        const speakWithElevenLabs = async (text, voiceId) => {
+            const apiUrl = `/.netlify/functions/elevenlabs`;
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ text, voiceId })
+                });
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`ElevenLabs Error: ${response.status} ${response.statusText}. Details: ${errorText}`);
+                }
+                
+                const audioBlob = await response.blob();
+                const audioUrl = URL.createObjectURL(audioBlob);
+                currentAudio = new Audio(audioUrl);
+                
+                const playPromise = currentAudio.play();
+                if (playPromise !== undefined) {
+                    playPromise.then(() => {
+                        mouth.classList.add('talking');
+                        stopSpeechBtn.style.display = 'inline-block';
+                        currentAudio.onended = stopSpeech;
+                    }).catch(error => {
+                        if (error.name === "NotAllowedError") {
+                            appendMessage("Browser blocked audio. Please click the page to grant permission.", "ai-error");
+                        } else {
+                             console.error("Audio playback error:", error);
+                        }
+                        stopSpeech();
+                    });
+                }
+
+            } catch (error) {
+                console.error("ElevenLabs function request failed:", error);
+                appendMessage(error.message, "ai-error");
+            }
+        };
+
+        const stopSpeech = () => {
+            if (currentAudio) {
+                currentAudio.pause();
+                currentAudio.src = '';
+                currentAudio = null;
+            }
+            if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+            mouth.classList.remove('talking');
+            stopSpeechBtn.style.display = 'none';
+        };
+        
+        const appendMessage = (message, sender) => {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'flex items-start gap-3' + (sender === 'user' ? ' justify-end' : '');
+            let iconClass = 'fa-solid text-xl pt-1 ' + (sender === 'user' ? 'fa-user text-gray-400' : sender === 'ai-error' ? 'fa-triangle-exclamation text-red-500' : 'fa-robot text-amber-400');
+            let textBg = sender === 'user' ? 'bg-amber-600' : sender === 'ai-error' ? 'bg-red-900/50' : 'bg-gray-800';
+            
+            const textP = document.createElement('p');
+            textP.className = `${textBg} rounded-lg p-3 max-w-md`;
+            textP.textContent = message;
+            if (/[\u0600-\u06FF]/.test(message)) textP.dir = 'rtl';
+
+            const iconI = document.createElement('i');
+            iconI.className = iconClass;
+
+            if (sender === 'user') {
+                messageDiv.appendChild(textP);
+                messageDiv.appendChild(iconI);
+            } else {
+                messageDiv.appendChild(iconI);
+                messageDiv.appendChild(textP);
+            }
+
+            chatLog.appendChild(messageDiv);
+            chatLog.scrollTop = chatLog.scrollHeight;
+        };
+
+        askButton.addEventListener('click', () => handleGeminiRequest());
+        userQuestionInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') handleGeminiRequest(); });
+        stopSpeechBtn.addEventListener('click', stopSpeech);
+        returnBtn.addEventListener('click', () => window.history.back());
+        voiceToggle.addEventListener('change', () => { isVoiceEnabled = voiceToggle.checked; });
+        document.querySelectorAll('.topic-btn').forEach(button => { button.addEventListener('click', () => { const topic = button.textContent.trim().substring(2); userQuestionInput.value = `Tell me more about your work with ${topic}.`; userQuestionInput.focus(); }); });
+        document.querySelectorAll('.guided-btn').forEach(button => { button.addEventListener('click', () => { const prompt = button.textContent.replace(/"/g, ''); userQuestionInput.value = `Let's try the "${prompt}" experience.`; userQuestionInput.focus(); }); });
+        document.getElementById('subscribe-btn').addEventListener('click', (e) => { e.target.textContent = 'Thank you!'; setTimeout(() => { e.target.textContent = 'Subscribe'; }, 2000); });
+        
+        let welcomeMessage = "Hi, I’m Yazen's AI persona. Use the toggle to enable auto-play for my voice. What would you like to discuss?";
+        appendMessage(welcomeMessage, 'ai');
+        conversationHistory.push({ role: "model", parts: [{ text: welcomeMessage }] });
+    });
+    </script>
+</body>
+</html>

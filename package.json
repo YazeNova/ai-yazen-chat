@@ -1,0 +1,11 @@
+{
+  "name": "ai-yazen-chat",
+  "version": "1.0.0",
+  "description": "AI Chatbot for Yazen Al-Saghiri, powered by Gemini and ElevenLabs.",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Yazen Al-Saghiri",
+  "license": "UNLICENSED"
+}
