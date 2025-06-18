@@ -99,14 +99,6 @@
         </div>
     </section>
 
-    <section id="guided" class="py-20 bg-gray-900">
-        <div class="container mx-auto px-6 text-center">
-            <h2 class="text-3xl md:text-4xl font-bold text-white">Guided Experiences & Templates</h2>
-            <p class="mt-4 text-lg text-gray-400 max-w-2xl mx-auto">Not sure where to start? Try one of these structured conversation flows.</p>
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-12 max-w-4xl mx-auto"><button class="guided-btn glassmorphism p-4 rounded-lg font-semibold text-white hover:bg-amber-500 hover:text-gray-900 transition">"Build Your AI Skill Roadmap"</button><button class="guided-btn glassmorphism p-4 rounded-lg font-semibold text-white hover:bg-amber-500 hover:text-gray-900 transition">"Talk Through a Life Challenge"</button><button class="guided-btn glassmorphism p-4 rounded-lg font-semibold text-white hover:bg-amber-500 hover:text-gray-900 transition">"Get Design Feedback"</button><button class="guided-btn glassmorphism p-4 rounded-lg font-semibold text-white hover:bg-amber-500 hover:text-gray-900 transition">"Creative Brainstorm Session"</button><button class="guided-btn glassmorphism p-4 rounded-lg font-semibold text-white hover:bg-amber-500 hover:text-gray-900 transition">"AI Career Q&A"</button><button class="guided-btn glassmorphism p-4 rounded-lg font-semibold text-white hover:bg-amber-500 hover:text-gray-900 transition">"Draft a Project Plan"</button></div>
-        </div>
-    </section>
-    
     <section id="courses" class="py-20">
         <div class="container mx-auto px-6 text-center">
             <h2 class="text-3xl md:text-4xl font-bold text-white">Climbing the AI Ladder 🪜</h2>
@@ -121,19 +113,13 @@
         </div>
     </section>
 
-    <section id="connect" class="py-20 bg-gray-900">
-        <div class="container mx-auto px-6 text-center">
-             <h2 class="text-3xl md:text-4xl font-bold text-white">Connect & Stay Updated</h2>
-            <p class="mt-4 text-lg text-gray-400 max-w-2xl mx-auto">Join the community, follow my journey, or invite me to collaborate with your team.</p>
-            <div class="mt-10 max-w-md mx-auto"><div class="flex flex-col sm:flex-row gap-4"><input type="email" placeholder="Enter your email" class="flex-grow bg-gray-800 border border-gray-700 text-white rounded-lg p-3 focus:ring-2 focus:ring-amber-500 focus:outline-none"><button id="subscribe-btn" class="bg-amber-500 hover:bg-amber-600 text-gray-900 font-bold py-3 px-6 rounded-lg transition">Subscribe</button></div></div>
-             <div class="mt-10 flex justify-center gap-6 text-2xl"><a href="#" class="text-gray-400 hover:text-amber-400 transition"><i class="fab fa-twitter"></i></a><a href="#" class="text-gray-400 hover:text-amber-400 transition"><i class="fab fa-linkedin-in"></i></a><a href="#" class="text-gray-400 hover:text-amber-400 transition"><i class="fab fa-youtube"></i></a><a href="#" class="text-gray-400 hover:text-amber-400 transition"><i class="fab fa-instagram"></i></a></div>
-        </div>
-    </section>
-
     <footer class="bg-black py-8">
         <div class="container mx-auto px-6 text-center text-gray-500">
             <p>&copy; 2025 Yazen M. Al-Saghiri. All Rights Reserved.</p>
-            <div class="mt-4 text-sm"><a href="#" class="hover:text-amber-400 transition">About</a> &bull; <a href="#" class="hover:text-amber-400 transition">Privacy Policy</a> &bull; <a href="#" class="hover:text-amber-400 transition">AI Disclosure</a></div>
+            <p class="mt-4 text-xs max-w-3xl mx-auto">
+                <strong>Disclaimer: AI Persona Responses</strong><br>
+                All responses provided by this AI persona shall be intended solely for informational and entertainment purposes. The AI's responses shall not, under any circumstances, represent my personal viewpoints, official statements, advice, or endorsements. I shall not be held responsible or liable for any consequences arising from the use of this AI or its content. Use of this AI shall be deemed as your unconditional agreement to and acceptance of these terms.
+            </p>
             <p class="mt-4 text-xs">Built with 💡 & 🤖</p>
         </div>
     </footer>
@@ -289,7 +275,6 @@
         voiceToggle.addEventListener('change', () => { isVoiceEnabled = voiceToggle.checked; });
         document.querySelectorAll('.topic-btn').forEach(button => { button.addEventListener('click', () => { const topic = button.textContent.trim().substring(2); userQuestionInput.value = `Tell me more about your work with ${topic}.`; userQuestionInput.focus(); }); });
         document.querySelectorAll('.guided-btn').forEach(button => { button.addEventListener('click', () => { const prompt = button.textContent.replace(/"/g, ''); userQuestionInput.value = `Let's try the "${prompt}" experience.`; userQuestionInput.focus(); }); });
-        document.getElementById('subscribe-btn').addEventListener('click', (e) => { e.target.textContent = 'Thank you!'; setTimeout(() => { e.target.textContent = 'Subscribe'; }, 2000); });
         
         let welcomeMessage = "Hi, I’m Yazen's AI persona. Use the toggle to enable auto-play for my voice. What would you like to discuss?";
         appendMessage(welcomeMessage, 'ai');
