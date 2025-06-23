@@ -38,7 +38,7 @@
             <h1 class="text-4xl md:text-6xl font-black tracking-tight"> Hello 👋</h1>
             <h2 class="text-2xl md:text-5xl font-bold text-amber-400 mt-2"> My name is Yazen. AI Yazen, with a license to connect 🕵️‍♂️ </h2>
             <p class="mt-6 text-lg md:text-xl text-gray-300 max-w-3xl mx-auto">
-                Global Comms Strategist 🌐 | AI Solutions Architect & Educator 🤖 | Designer of the "Climbing the AI Ladder" Mastery Course Series 🪜 | Learning Manger 🎓 |  Life Coach 🧠 |  Designer 🎨 | Videographer 🎥  | Photographer 📸 | Poet & Author ✍️ | and more ...
+                Global Comms Strategist 🌐 | AI Solutions Architect & Educator 🤖 | Designer of the "Climbing the AI Ladder" Mastery Course Series � | Learning Manger 🎓 | Life Coach 🧠 | Designer 🎨 | Videographer 🎥 | Photographer 📸 | Poet & Author ✍️ | and more ...
             </p>
             <a href="#chat" class="mt-10 inline-block bg-amber-500 hover:bg-amber-600 text-gray-900 font-bold py-3 px-8 rounded-full text-lg transition duration-300 transform hover:scale-105">
                 💬 Start Chatting with Yazen
@@ -124,6 +124,17 @@
         </div>
     </footer>
 
+    <!-- Passcode Modal -->
+    <div id="passcode-modal" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 hidden">
+        <div class="glassmorphism p-8 rounded-xl shadow-lg w-full max-w-sm text-center">
+            <h3 class="text-2xl font-bold text-white mb-4">Enter Passcode to Enable Voice</h3>
+            <input type="password" id="passcode-input" class="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 text-white mb-4 focus:ring-2 focus:ring-amber-500 focus:outline-none" placeholder="Enter passcode">
+            <p id="passcode-message" class="text-red-400 mb-4"></p>
+            <button id="passcode-submit-btn" class="bg-amber-500 hover:bg-amber-600 text-gray-900 font-bold py-3 px-6 rounded-lg transition w-full">Submit</button>
+            <button id="passcode-cancel-btn" class="mt-3 bg-gray-700 hover:bg-gray-600 text-white font-bold py-3 px-6 rounded-lg transition w-full">Cancel</button>
+        </div>
+    </div>
+
     <script>
     document.addEventListener('DOMContentLoaded', () => {
 
@@ -132,6 +143,9 @@
             ELEVENLABS_VOICE_ID_AR: "GHBqETmNwnWVV2KJWAS0"
         };
         
+        let isPasscodeVerified = false; // Tracks if the passcode has been successfully entered
+        let isVoiceEnabled = false; // Tracks the state of the voice toggle switch
+
         const userQuestionInput = document.getElementById('user-question');
         const askButton = document.getElementById('ask-gemini-btn');
         const stopSpeechBtn = document.getElementById('stop-speech-btn');
@@ -141,63 +155,150 @@
         const mouth = document.getElementById('mouth');
         const voiceToggle = document.getElementById('voice-toggle');
 
-        let currentAudio = null;
-        let isVoiceEnabled = false; 
-        
-        let conversationHistory = [];
+        // Passcode modal elements
+        const passcodeModal = document.getElementById('passcode-modal');
+        const passcodeInput = document.getElementById('passcode-input');
+        const passcodeMessage = document.getElementById('passcode-message');
+        const passcodeSubmitBtn = document.getElementById('passcode-submit-btn');
+        const passcodeCancelBtn = document.getElementById('passcode-cancel-btn');
 
+        let currentAudio = null; // Holds the currently playing audio object
+        let conversationHistory = []; // Stores the chat history for Gemini API
+
+        /**
+         * Displays the passcode modal and disables main chat input/button.
+         */
+        const showPasscodeModal = () => {
+            passcodeModal.classList.remove('hidden');
+            passcodeInput.value = ''; // Clear any previous input
+            passcodeMessage.textContent = ''; // Clear any previous error messages
+            passcodeInput.focus(); // Focus on the input field for immediate typing
+            userQuestionInput.disabled = true; // Disable chat input
+            askButton.disabled = true; // Disable send button
+        };
+
+        /**
+         * Hides the passcode modal and re-enables main chat input/button.
+         */
+        const hidePasscodeModal = () => {
+            passcodeModal.classList.add('hidden');
+            userQuestionInput.disabled = false; // Re-enable chat input
+            askButton.disabled = false; // Re-enable send button
+            userQuestionInput.focus(); // Focus back on the chat input
+        };
+
+        /**
+         * Sends the entered passcode to the Netlify Function for verification.
+         */
+        const checkPasscode = async () => {
+            const enteredPasscode = passcodeInput.value.trim();
+            if (!enteredPasscode) {
+                passcodeMessage.textContent = "Please enter a passcode.";
+                return;
+            }
+
+            passcodeSubmitBtn.disabled = true; // Disable button to prevent multiple submissions
+            passcodeMessage.textContent = "Verifying..."; // Show loading message
+
+            try {
+                // Make a POST request to the Netlify Function
+                const response = await fetch('/.netlify/functions/verify-passcode', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ passcode: enteredPasscode }) // Send the entered passcode
+                });
+
+                const result = await response.json(); // Parse the JSON response
+
+                if (response.ok && result.success) { // If status is 200 OK and success is true
+                    isPasscodeVerified = true;
+                    hidePasscodeModal();
+                    appendMessage("Voice activated! You can now chat with Yazen.", 'ai'); 
+                    voiceToggle.checked = true; // Ensure the toggle reflects the activated state
+                } else {
+                    // Passcode incorrect or other error from function
+                    passcodeMessage.textContent = result.message || "Incorrect passcode. Please try again.";
+                    passcodeInput.value = ''; // Clear input field
+                    passcodeInput.focus(); // Refocus for new attempt
+                    isPasscodeVerified = false;
+                    voiceToggle.checked = false; // Keep voice toggle off
+                    isVoiceEnabled = false; // Update state variable
+                }
+            } catch (error) {
+                console.error("Error verifying passcode with Netlify Function:", error);
+                passcodeMessage.textContent = "Verification failed due to a network error. Please try again.";
+                isPasscodeVerified = false;
+                voiceToggle.checked = false;
+                isVoiceEnabled = false;
+            } finally {
+                passcodeSubmitBtn.disabled = false; // Re-enable submit button
+            }
+        };
+
+        /**
+         * Handles sending user questions to the Gemini AI.
+         */
         const handleGeminiRequest = async () => {
             const userQuestion = userQuestionInput.value.trim();
-            if (!userQuestion) return;
+            if (!userQuestion) return; // Do nothing if input is empty
 
-            appendMessage(userQuestion, 'user');
-            conversationHistory.push({ role: "user", parts: [{ text: userQuestion }] });
+            appendMessage(userQuestion, 'user'); // Display user's message in chat log
+            conversationHistory.push({ role: "user", parts: [{ text: userQuestion }] }); // Add to history
 
-            askButton.disabled = true;
-            userQuestionInput.value = '';
-            thinkingIndicator.style.display = 'flex';
-            stopSpeech();
+            askButton.disabled = true; // Disable input/send during AI processing
+            userQuestionInput.value = ''; // Clear input field
+            thinkingIndicator.style.display = 'flex'; // Show AI thinking indicator
+            stopSpeech(); // Stop any currently playing audio
 
-            const apiUrl = `/.netlify/functions/gemini`;
+            const apiUrl = `/.netlify/functions/gemini`; // Endpoint for Gemini API Netlify Function
 
             try {
                 const response = await fetch(apiUrl, { 
                     method: 'POST', 
                     headers: { 'Content-Type': 'application/json' }, 
-                    body: JSON.stringify({ history: conversationHistory })
+                    body: JSON.stringify({ history: conversationHistory }) // Send conversation history
                 });
-                if (!response.ok) { throw new Error(`API error: ${response.status} ${response.statusText}`); }
+                if (!response.ok) { // Check for HTTP errors
+                    const errorDetails = await response.text();
+                    throw new Error(`API error: ${response.status} ${response.statusText}. Details: ${errorDetails}`); 
+                }
 
-                const result = await response.json();
+                const result = await response.json(); // Parse AI response
                 const aiText = result.text || "I'm sorry, I couldn't process that request. Please try again.";
                 
-                appendMessage(aiText, 'ai');
-                conversationHistory.push({ role: "model", parts: [{ text: aiText }] });
+                appendMessage(aiText, 'ai'); // Display AI's response
+                conversationHistory.push({ role: "model", parts: [{ text: aiText }] }); // Add AI response to history
                 
-                if (isVoiceEnabled) {
-                    const isArabic = /[\u0600-\u06FF]/.test(aiText);
+                // Only speak if voice is enabled AND passcode is verified
+                if (isVoiceEnabled && isPasscodeVerified) {
+                    const isArabic = /[\u0600-\u06FF]/.test(aiText); // Check if text is Arabic
                     const voiceId = isArabic ? CONFIG.ELEVENLABS_VOICE_ID_AR : CONFIG.ELEVENLABS_VOICE_ID_EN;
-                    speakWithElevenLabs(aiText, voiceId);
+                    speakWithElevenLabs(aiText, voiceId); // Initiate text-to-speech
                 }
 
             } catch (error) {
                 console.error('Gemini function request failed:', error);
                 appendMessage('An error occurred with the AI. Please check the function logs on Netlify.', 'ai-error');
             } finally {
-                thinkingIndicator.style.display = 'none';
-                askButton.disabled = false;
-                userQuestionInput.focus();
+                thinkingIndicator.style.display = 'none'; // Hide thinking indicator
+                askButton.disabled = false; // Re-enable input/send
+                userQuestionInput.focus(); // Return focus to input
             }
         };
         
+        /**
+         * Uses ElevenLabs API via a Netlify Function to convert text to speech.
+         * @param {string} text - The text to be spoken.
+         * @param {string} voiceId - The ElevenLabs voice ID to use.
+         */
         const speakWithElevenLabs = async (text, voiceId) => {
-            const apiUrl = `/.netlify/functions/elevenlabs`;
+            const apiUrl = `/.netlify/functions/elevenlabs`; // Endpoint for ElevenLabs Netlify Function
 
             try {
                 const response = await fetch(apiUrl, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ text, voiceId })
+                    body: JSON.stringify({ text, voiceId }) // Send text and voice ID
                 });
 
                 if (!response.ok) {
@@ -205,23 +306,24 @@
                     throw new Error(`ElevenLabs Error: ${response.status} ${response.statusText}. Details: ${errorText}`);
                 }
                 
-                const audioBlob = await response.blob();
-                const audioUrl = URL.createObjectURL(audioBlob);
-                currentAudio = new Audio(audioUrl);
+                const audioBlob = await response.blob(); // Get audio as a Blob
+                const audioUrl = URL.createObjectURL(audioBlob); // Create a URL for the audio Blob
+                currentAudio = new Audio(audioUrl); // Create a new Audio object
                 
-                const playPromise = currentAudio.play();
+                const playPromise = currentAudio.play(); // Attempt to play audio
                 if (playPromise !== undefined) {
                     playPromise.then(() => {
-                        mouth.classList.add('talking');
-                        stopSpeechBtn.style.display = 'inline-block';
-                        currentAudio.onended = stopSpeech;
+                        mouth.classList.add('talking'); // Animate mouth
+                        stopSpeechBtn.style.display = 'inline-block'; // Show stop button
+                        currentAudio.onended = stopSpeech; // Stop animation when audio ends
                     }).catch(error => {
+                        // Handle cases where audio playback is blocked (e.g., by browser policies)
                         if (error.name === "NotAllowedError") {
                             appendMessage("Browser blocked audio. Please click the page to grant permission.", "ai-error");
                         } else {
-                             console.error("Audio playback error:", error);
+                            console.error("Audio playback error:", error);
                         }
-                        stopSpeech();
+                        stopSpeech(); // Ensure mouth animation and stop button reset
                     });
                 }
 
@@ -231,31 +333,54 @@
             }
         };
 
+        /**
+         * Stops any currently playing audio and resets the UI.
+         */
         const stopSpeech = () => {
             if (currentAudio) {
-                currentAudio.pause();
-                currentAudio.src = '';
-                currentAudio = null;
+                currentAudio.pause(); // Pause audio
+                currentAudio.src = ''; // Clear audio source
+                currentAudio = null; // Clear audio object
             }
-            if ('speechSynthesis' in window) window.speechSynthesis.cancel();
-            mouth.classList.remove('talking');
-            stopSpeechBtn.style.display = 'none';
+            if ('speechSynthesis' in window) window.speechSynthesis.cancel(); // Cancel browser's speech synthesis if active
+            mouth.classList.remove('talking'); // Stop mouth animation
+            stopSpeechBtn.style.display = 'none'; // Hide stop button
         };
         
+        /**
+         * Appends a new message to the chat log.
+         * @param {string} message - The message text.
+         * @param {string} sender - 'user', 'ai', or 'ai-error'.
+         */
         const appendMessage = (message, sender) => {
             const messageDiv = document.createElement('div');
+            // Align messages based on sender
             messageDiv.className = 'flex items-start gap-3' + (sender === 'user' ? ' justify-end' : '');
-            let iconClass = 'fa-solid text-xl pt-1 ' + (sender === 'user' ? 'fa-user text-gray-400' : sender === 'ai-error' ? 'fa-triangle-exclamation text-red-500' : 'fa-robot text-amber-400');
-            let textBg = sender === 'user' ? 'bg-amber-600' : sender === 'ai-error' ? 'bg-red-900/50' : 'bg-gray-800';
+            
+            let iconClass = 'fa-solid text-xl pt-1 ';
+            let textBg;
+
+            if (sender === 'user') {
+                iconClass += 'fa-user text-gray-400';
+                textBg = 'bg-amber-600';
+            } else if (sender === 'ai-error') {
+                iconClass += 'fa-triangle-exclamation text-red-500';
+                textBg = 'bg-red-900/50';
+            } else { // sender === 'ai'
+                iconClass += 'fa-robot text-amber-400';
+                textBg = 'bg-gray-800';
+            }
             
             const textP = document.createElement('p');
             textP.className = `${textBg} rounded-lg p-3 max-w-md`;
             textP.textContent = message;
+            // Set text direction to Right-to-Left for Arabic messages
             if (/[\u0600-\u06FF]/.test(message)) textP.dir = 'rtl';
 
             const iconI = document.createElement('i');
             iconI.className = iconClass;
 
+            // Order icon and text based on sender for alignment
             if (sender === 'user') {
                 messageDiv.appendChild(textP);
                 messageDiv.appendChild(iconI);
@@ -265,17 +390,65 @@
             }
 
             chatLog.appendChild(messageDiv);
-            chatLog.scrollTop = chatLog.scrollHeight;
+            chatLog.scrollTop = chatLog.scrollHeight; // Scroll to bottom
         };
 
+        // --- Event Listeners ---
+
+        // Chat input and send button
         askButton.addEventListener('click', () => handleGeminiRequest());
-        userQuestionInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') handleGeminiRequest(); });
+        userQuestionInput.addEventListener('keydown', (e) => { 
+            if (e.key === 'Enter') handleGeminiRequest(); 
+        });
         stopSpeechBtn.addEventListener('click', stopSpeech);
         returnBtn.addEventListener('click', () => window.history.back());
-        voiceToggle.addEventListener('change', () => { isVoiceEnabled = voiceToggle.checked; });
-        document.querySelectorAll('.topic-btn').forEach(button => { button.addEventListener('click', () => { const topic = button.textContent.trim().substring(2); userQuestionInput.value = `Tell me more about your work with ${topic}.`; userQuestionInput.focus(); }); });
-        document.querySelectorAll('.guided-btn').forEach(button => { button.addEventListener('click', () => { const prompt = button.textContent.replace(/"/g, ''); userQuestionInput.value = `Let's try the "${prompt}" experience.`; userQuestionInput.focus(); }); });
+
+        // Passcode modal interaction
+        passcodeSubmitBtn.addEventListener('click', checkPasscode);
+        passcodeInput.addEventListener('keydown', (e) => { 
+            if (e.key === 'Enter') checkPasscode(); 
+        });
+        passcodeCancelBtn.addEventListener('click', () => {
+            hidePasscodeModal();
+            voiceToggle.checked = false; // Turn off voice toggle if user cancels
+            isVoiceEnabled = false; // Also update the state variable
+        });
+
+        // Voice toggle switch logic
+        voiceToggle.addEventListener('change', () => {
+            isVoiceEnabled = voiceToggle.checked;
+            if (isVoiceEnabled) {
+                // If voice is turned on and passcode not yet verified, show modal
+                if (!isPasscodeVerified) {
+                    showPasscodeModal();
+                }
+            } else {
+                // If voice is turned off, reset verification status and hide modal
+                hidePasscodeModal(); // Ensure modal is hidden if voice is turned off manually
+                isPasscodeVerified = false; // Reset verification
+                stopSpeech(); // Also stop any ongoing speech if voice is disabled
+            }
+        });
+
+        // Topic buttons (e.g., AI, Learning)
+        document.querySelectorAll('.topic-btn').forEach(button => { 
+            button.addEventListener('click', () => { 
+                const topic = button.textContent.trim().substring(2); // Extract topic text
+                userQuestionInput.value = `Tell me more about your work with ${topic}.`; 
+                userQuestionInput.focus(); 
+            }); 
+        });
+
+        // Guided prompt buttons (if any are added)
+        document.querySelectorAll('.guided-btn').forEach(button => { 
+            button.addEventListener('click', () => { 
+                const prompt = button.textContent.replace(/"/g, ''); 
+                userQuestionInput.value = `Let's try the "${prompt}" experience.`; 
+                userQuestionInput.focus(); 
+            }); 
+        });
         
+        // Initial welcome message when the page loads
         let welcomeMessage = "Hi, I’m Yazen's AI persona. Use the toggle to enable auto-play for my voice. What would you like to discuss?";
         appendMessage(welcomeMessage, 'ai');
         conversationHistory.push({ role: "model", parts: [{ text: welcomeMessage }] });
@@ -283,3 +456,4 @@
     </script>
 </body>
 </html>
+�
