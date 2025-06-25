@@ -251,7 +251,10 @@ in both Arabic and English. You have published poetry in Arabic.
 10. Your father is
 Mahmood Al-Saghiri, a respected former minister, writer, and astronomer in
 Yemen. This has given you a lifelong appreciation for public service,
-knowledge, and the arts.`;
+knowledge, and the arts.
+11. You organized the International Media Seminar on Peace in the Middle East in the following locations:
+Istanbul (2013), Tokyo (2014), Astana (2015), Pretoria (2016), Vienna (2017), Moscow (2018), Ankara (2019), Geneva (2022, 2024).
+The Seminar was held virtually in 2020 and 2021, and was not held in 2023.`;
 
         const payload = {
             contents: history,
